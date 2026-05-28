@@ -70,33 +70,33 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+# ==============================================================================
+# FORCE PRODUCTION ENVIRONMENT OR LOCAL FALLBACK
+# ==============================================================================
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL:
+# Check if running on Render's cloud infrastructure
+IS_RENDER = os.environ.get("RENDER") or os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+
+if IS_RENDER:
+    # Pull strictly from the web dashboard container variables
+    prod_db_url = os.environ.get("DATABASE_URL")
+    
+    # Fail loudly right here if the dashboard variable is missing or wrong
+    
     DATABASES = {
         "default": dj_database_url.config(
+            default=prod_db_url,
             conn_max_age=600,
-            ssl_require=not DEBUG,
+            ssl_require=True  # In production, Render connections must use SSL
         )
     }
 else:
-    if RENDER_EXTERNAL_HOSTNAME or not DEBUG:
-        raise ImproperlyConfigured(
-            "DATABASE_URL must be set in production. On Render, use the PostgreSQL "
-            "Internal Database URL, not the web service URL or port 8000."
-        )
-
+    # Clean fallback for your local Windows machine (ignores cloud configuration)
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("DB_NAME", "breathe_esg"),
-            "USER": os.getenv("DB_USER", "postgres"),
-            "PASSWORD": os.getenv("DB_PASSWORD", ""),
-            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
-            "PORT": os.getenv("DB_PORT", "5432"),
-        }
+        "default": dj_database_url.config(
+            default="postgres://postgres:Pass@123@127.0.0.1:5432/breathe_esg"
+        )
     }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
