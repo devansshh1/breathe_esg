@@ -4,6 +4,7 @@ from pathlib import Path
 import dj_database_url
 
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv(
@@ -70,7 +71,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("DB_NAME", "breathe_esg"),
         "USER": os.getenv("DB_USER", "postgres"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "devDev@123"),
+        "PASSWORD": os.getenv("DB_PASSWORD", os.getenv("DB_PASSWORD")),
         "HOST": os.getenv("DB_HOST", "127.0.0.1"),
         "PORT": os.getenv("DB_PORT", "5432"),
     }
