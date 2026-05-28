@@ -148,27 +148,49 @@ SIMPLE_JWT = {
 # JWT cookie settings
 # Do not set max_age or expires when writing these cookies.
 # That keeps them as non-persistent session cookies.
+# ==============================================================================
+# COOKIES & CORS PRODUCTION SETTINGS
+# ==============================================================================
+
+# JWT cookie settings
 AUTH_COOKIE_ACCESS = "access_token"
 AUTH_COOKIE_REFRESH = "refresh_token"
-AUTH_COOKIE_SECURE = not DEBUG
-AUTH_COOKIE_HTTP_ONLY = True
-AUTH_COOKIE_SAMESITE = "Lax"
-AUTH_COOKIE_PATH = "/"
 
+# CRITICAL FIXES FOR VISUAL CROSS-DOMAIN AUTHENTICATION (Vercel <-> Render):
+if IS_RENDER:
+    AUTH_COOKIE_SECURE = True
+    AUTH_COOKIE_SAMESITE = "None"      # Must be "None" to allow transmission over HTTPS across domains
+    
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = "None"     # Must be "None" for cross-origin security handshakes
+    
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = "None"
+else:
+    # Safe loose standards for local Windows machine testing
+    AUTH_COOKIE_SECURE = False
+    AUTH_COOKIE_SAMESITE = "Lax"
+    
+    CSRF_COOKIE_SECURE = False
+    CSRF_COOKIE_SAMESITE = "Lax"
+    
+    SESSION_COOKIE_SECURE = False
+    SESSION_COOKIE_SAMESITE = "Lax"
+
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_PATH = "/"
+CSRF_COOKIE_HTTPONLY = False
+
+# Your explicit allowed origins (Perfectly configured!)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://breathe-esg-gamma-two.vercel.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://breathe-esg-gamma-two.vercel.app",
 ]
-
-CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_HTTPONLY = False
-
-SESSION_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SAMESITE = "Lax"
