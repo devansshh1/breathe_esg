@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -79,6 +80,12 @@ if DATABASE_URL:
         )
     }
 else:
+    if RENDER_EXTERNAL_HOSTNAME or not DEBUG:
+        raise ImproperlyConfigured(
+            "DATABASE_URL must be set in production. On Render, use the PostgreSQL "
+            "Internal Database URL, not the web service URL or port 8000."
+        )
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
