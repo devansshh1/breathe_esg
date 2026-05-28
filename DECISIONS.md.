@@ -1,0 +1,21 @@
+ ###  Resolved ambiguity(by myself)-
+
+1) When learning about this topic I had the notion that if all data is valid then mark status as Pending Review and if data has some errors then flag it
+so that the analyst can review the data  but realised this is not true because if we input some random data (suppose column names in italian) then we 
+dont know quantity 20 must map in which column and this could lead to poor data quality so I declared some default column names and if the column names
+are different then user needs to manaully map with the corresponding column name.
+
+2) while testing for ambiguity i checked with distance:(empty not null)  using which I came to know that it  is not just missing data but it is syntactically illegal
+JSON which could break the server with parsing error so I decided to pass null instead of blank,I realised difference between no data and null defined.
+
+
+I ignored the fact that the csv files could have more than 4 columns as my declared default column name are [ Quantity, Unit , Material , Date] , I could have choosen 
+more number of columns but was unsure how to decide the exact number .
+
+
+###  My question for PM is-
+
+How can I decide what default size to take for column headers ,If I use some nlp api to judge whether a correct word or just a random word then that would make the
+whole website very slow so how do we decide this ?
+
+
